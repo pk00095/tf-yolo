@@ -1,0 +1,6 @@
+*.pyc
+__pycache__
+/DATA
+aerial-vehicles-dataset
+*.zip
+*.txt
