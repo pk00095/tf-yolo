@@ -151,7 +151,7 @@ class DetectionBase(object):
       return y_true_layer1, y_true_layer2, y_true_layer3
 
     def pascalvoc_to_yolo(self, image_array, box):
-        print(image_array.shape, box.shape)
+        # print(image_array.shape, box.shape)
         ih, iw, _c = image_array.shape
         h, w = self.config.input_shape
         box = box[~np.all(box<0, axis=-1)] #remove all -1
@@ -186,7 +186,7 @@ class DetectionBase(object):
             box[:, [0,2]] = box[:, [0,2]]*scale + dx
             box[:, [1,3]] = box[:, [1,3]]*scale + dy
             box_data[:len(box)] = box
-
+        # tf.print(box.shape)
         return image_data.astype(keras.backend.floatx()), box_data.astype(keras.backend.floatx())
 
     def tf_pascalvoc_to_yolo(self, image_batch, xmin_batch, ymin_batch, xmax_batch, ymax_batch, label_batch):
@@ -317,5 +317,5 @@ if __name__ == '__main__':
 
   training_dataset = dataset_func.get_train_function()
 
-  for i in training_dataset.take(6):
-    pass
+  for im_batch, y1, y2,y3 in training_dataset.take(6):
+    print(im_batch.shape, y1.shape, y2.shape, y3.shape)
