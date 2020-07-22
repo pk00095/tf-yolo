@@ -26,7 +26,8 @@ def float_list_feature(value):
 
 def findLabels(xml_dir):
 
-  unique_labels = ['background']
+  #unique_labels = ['background']
+  unique_labels = []
 
   #print(os.path.join(xml_dir,'*.xml'))
 

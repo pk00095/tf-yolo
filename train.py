@@ -10,6 +10,8 @@ from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, ReduceLROnP
 
 from yolo3.model import yolo_body, tiny_yolo_body, yolo_loss, Yolo_Loss
 from helpers import YoloConfig
+
+from object_detection_parser import DetectionBase
 # from yolo3.utils import get_random_data
 
 
@@ -148,12 +150,19 @@ def create_tiny_model(input_shape, anchors, num_classes, load_pretrained=True, f
     return model
 
 def main():
+    import os 
+    
     config = YoloConfig()
-    num_classes = 5
+    num_classes = 4
     yolo_model = create_model(config=config, num_classes=num_classes, load_pretrained=False)
 
-    # print(yolo_model.inputs)
-    # print(yolo_model.outputs)
+    dataset_func = DetectionBase(
+        train_tfrecords=os.path.join(os.getcwd(), 'DATA' ,'train*.tfrecord'),
+        test_tfrecords=os.path.join(os.getcwd(), 'DATA' ,'test*.tfrecord'), 
+        num_classes=num_classes, 
+        config=config)
+
+    training_dataset = dataset_func.get_train_function()
 
     l1_candidate_anchors = config.anchors[config.anchor_mask[0]]
     l2_candidate_anchors = config.anchors[config.anchor_mask[1]]
@@ -170,6 +179,8 @@ def main():
             'y2_pred':layer2_loss,
             'y3_pred':layer3_loss}
                 )
+
+    yolo_model.fit(training_dataset, epochs=10, steps_per_epoch=100)
 
 
 
