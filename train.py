@@ -8,7 +8,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 
-from yolo3.model import yolo_body, tiny_yolo_body, yolo_loss
+from yolo3.model import yolo_body, tiny_yolo_body, yolo_loss, Yolo_Loss
 from helpers import YoloConfig
 # from yolo3.utils import get_random_data
 
@@ -152,8 +152,26 @@ def main():
     num_classes = 5
     yolo_model = create_model(config=config, num_classes=num_classes, load_pretrained=False)
 
-    print(yolo_model.inputs)
-    print(yolo_model.outputs)
+    # print(yolo_model.inputs)
+    # print(yolo_model.outputs)
+
+    l1_candidate_anchors = config.anchors[config.anchor_mask[0]]
+    l2_candidate_anchors = config.anchors[config.anchor_mask[1]]
+    l3_candidate_anchors = config.anchors[config.anchor_mask[2]]
+
+    layer1_loss = Yolo_Loss(input_shape=config.input_shape, candidate_anchors=l1_candidate_anchors, grid_shape=yolo_model.outputs[0].shape, num_classes=num_classes)
+    layer2_loss = Yolo_Loss(input_shape=config.input_shape, candidate_anchors=l2_candidate_anchors, grid_shape=yolo_model.outputs[1].shape, num_classes=num_classes)
+    layer3_loss = Yolo_Loss(input_shape=config.input_shape, candidate_anchors=l3_candidate_anchors, grid_shape=yolo_model.outputs[2].shape, num_classes=num_classes)
+
+    yolo_model.compile(
+        optimizer=Adam(lr=1e-3),
+        loss={
+            'y1_pred':layer1_loss,
+            'y2_pred':layer2_loss,
+            'y3_pred':layer3_loss}
+                )
+
+
 
 if __name__ == '__main__':
     main()
