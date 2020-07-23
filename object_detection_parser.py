@@ -256,9 +256,9 @@ class DetectionBase(object):
 
         y_true_layer1, y_true_layer2, y_true_layer3 = self.tf_preprocess_true_boxes(annotation_batch)
 
-        y_true_layer1.set_shape([self.config.input_shape[0]/32, self.config.input_shape[1]/32, len(self.config.anchor_mask[0]),5+self.num_classes])
-        y_true_layer2.set_shape([self.config.input_shape[0]/16, self.config.input_shape[1]/16, len(self.config.anchor_mask[1]),5+self.num_classes])
-        y_true_layer3.set_shape([self.config.input_shape[0]/8, self.config.input_shape[1]/8, len(self.config.anchor_mask[2]),5+self.num_classes])
+        y_true_layer1.set_shape([self.config.input_shape[0]//32, self.config.input_shape[1]//32, len(self.config.anchor_mask[0]),5+self.num_classes])
+        y_true_layer2.set_shape([self.config.input_shape[0]//16, self.config.input_shape[1]//16, len(self.config.anchor_mask[1]),5+self.num_classes])
+        y_true_layer3.set_shape([self.config.input_shape[0]//8, self.config.input_shape[1]//8, len(self.config.anchor_mask[2]),5+self.num_classes])
 
         # return im_batch, annotation_batch
         return im_batch, {'tf_op_layer_y1_pred':y_true_layer1, 'tf_op_layer_y2_pred':y_true_layer2, 'tf_op_layer_y3_pred':y_true_layer3}
