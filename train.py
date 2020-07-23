@@ -179,10 +179,10 @@ def main():
     yolo_model.compile(
         optimizer=Adam(lr=1e-3),
         loss={
-            'y1_pred':layer1_loss,
-            'y2_pred':layer2_loss,
-            'y3_pred':layer3_loss}
-                )
+        'tf_op_layer_y1_pred':layer1_loss,
+        'tf_op_layer_y2_pred':layer2_loss,
+        'tf_op_layer_y3_pred':layer3_loss}
+            )
 
     yolo_model.fit(training_dataset, epochs=10, steps_per_epoch=100)
 

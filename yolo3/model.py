@@ -8,7 +8,7 @@ from tensorflow.keras.layers import (Conv2D, Add, ZeroPadding2D, UpSampling2D,
                                     Concatenate, MaxPooling2D, LeakyReLU, BatchNormalization)
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
-from tensorflow.python.keras.losses import LossFunctionWrapper
+from tensorflow.python.keras.losses import LossFunctionWrapper, Loss
 
 # from yolo3.utils import compose
 def compose(*funcs):
@@ -362,6 +362,9 @@ class Yolo_Loss(LossFunctionWrapper):
         # self.arg = arg
 
 def customized_yolo_loss(y_true, y_pred, input_shape, candidate_anchors, grid_shape, num_classes, ignore_thresh=.5):
+
+    y_pred = tf.convert_to_tensor(y_pred)
+    y_true = tf.cast(y_true, y_pred.dtype)
 
     m = K.shape(y_pred)[0] # batch size, tensor
     mf = K.cast(m, K.dtype(y_pred))
