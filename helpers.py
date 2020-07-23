@@ -1,3 +1,6 @@
+import tensorflow as tf
+import zipfile, tempfile, os
+
 import numpy as np
 from utils import get_random_data
 
@@ -45,6 +48,24 @@ class YoloConfig(object):
         self.num_layers = len(self.anchors)//3  #default setting
 
         assert self.num_layers == 3, 'currently support only 3 pyramid layers' #have tomake it dynamic
+
+
+def download_aerial_dataset(dataset_path=tempfile.gettempdir()):
+    zip_url = 'https://segmind-data.s3.ap-south-1.amazonaws.com/edge/data/aerial-vehicles-dataset.zip'
+    path_to_zip_file = tf.keras.utils.get_file(
+        'aerial-vehicles-dataset.zip',
+        zip_url,
+        cache_dir=dataset_path, 
+        cache_subdir='',
+        extract=False)
+    directory_to_extract_to = os.path.join(dataset_path,'aerial-vehicles-dataset')
+    with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
+        zip_ref.extractall(directory_to_extract_to)
+
+    images_dir = os.path.join(dataset_path, 'aerial-vehicles-dataset','images')
+    annotation_dir = os.path.join(dataset_path, 'aerial-vehicles-dataset','annotations','pascalvoc_xml')
+
+    return images_dir, annotation_dir
 
 def preprocess_true_boxes(true_boxes, input_shape, anchors, num_classes, anchor_mask):
     '''Preprocess true boxes to training input format

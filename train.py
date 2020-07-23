@@ -9,7 +9,8 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 
 from yolo3.model import yolo_body, tiny_yolo_body, yolo_loss, Yolo_Loss
-from helpers import YoloConfig
+from helpers import YoloConfig, download_aerial_dataset
+from tfrecord_creator import create_tfrecords
 
 from object_detection_parser import DetectionBase
 # from yolo3.utils import get_random_data
@@ -151,6 +152,9 @@ def create_tiny_model(input_shape, anchors, num_classes, load_pretrained=True, f
 
 def main():
     import os 
+
+    image_dir, xml_dir = download_aerial_dataset()
+    create_tfrecords(image_dir, xml_dir)
     
     config = YoloConfig()
     num_classes = 4
