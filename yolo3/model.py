@@ -369,6 +369,8 @@ def customized_yolo_loss(y_true, y_pred, input_shape, candidate_anchors, grid_sh
     m = K.shape(y_pred)[0] # batch size, tensor
     mf = K.cast(m, K.dtype(y_pred))
 
+    grid_shape = K.cast(grid_shape[1:3], K.dtype(y_true))
+
     object_mask = y_true[..., 4:5]
     true_class_probs = y_true[..., 5:]
 
@@ -377,7 +379,7 @@ def customized_yolo_loss(y_true, y_pred, input_shape, candidate_anchors, grid_sh
     pred_box = K.concatenate([pred_xy, pred_wh])
 
     # Darknet raw box to calculate loss.
-    print(y_true.shape, grid_shape, grid.shape)
+    # print(y_true[..., :2].shape, grid_shape[::-1], grid.shape)
     raw_true_xy = y_true[..., :2]*grid_shape[::-1] - grid
     raw_true_wh = K.log(y_true[..., 2:4] / candidate_anchors * input_shape[::-1])
     raw_true_wh = K.switch(object_mask, raw_true_wh, K.zeros_like(raw_true_wh)) # avoid log(0)=-inf
@@ -392,7 +394,7 @@ def customized_yolo_loss(y_true, y_pred, input_shape, candidate_anchors, grid_sh
         best_iou = K.max(iou, axis=-1)
         ignore_mask = ignore_mask.write(b, K.cast(best_iou<ignore_thresh, K.dtype(true_box)))
         return b+1, ignore_mask
-    _, ignore_mask = K.control_flow_ops.while_loop(lambda b,*args: b<m, loop_body, [0, ignore_mask])
+    _, ignore_mask = tf.while_loop(lambda b,*args: b<m, loop_body, [0, ignore_mask])
     ignore_mask = ignore_mask.stack()
     ignore_mask = K.expand_dims(ignore_mask, -1)
 
@@ -407,10 +409,11 @@ def customized_yolo_loss(y_true, y_pred, input_shape, candidate_anchors, grid_sh
     wh_loss = K.sum(wh_loss) / mf
     confidence_loss = K.sum(confidence_loss) / mf
     class_loss = K.sum(class_loss) / mf
-    loss += xy_loss + wh_loss + confidence_loss + class_loss
+    # loss += xy_loss + wh_loss + confidence_loss + class_loss
     # if print_loss:
     #     loss = tf.Print(loss, [loss, xy_loss, wh_loss, confidence_loss, class_loss, K.sum(ignore_mask)], message='loss: ')
-    return loss
+    return xy_loss + wh_loss + confidence_loss + class_loss
+    # return loss
 
 def yolo_loss(args, anchors, num_classes, ignore_thresh=.5, print_loss=False):
     '''Return yolo_loss tensor

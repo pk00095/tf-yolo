@@ -311,7 +311,7 @@ class DetectionBase(object):
 if __name__ == '__main__':
   from helpers import YoloConfig
 
-  config = YoloConfig()
+  config = YoloConfig(height=256, width=256)
 
   dataset_func = DetectionBase(
         train_tfrecords=os.path.join(os.getcwd(), 'DATA' ,'train*.tfrecord'),

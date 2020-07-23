@@ -157,6 +157,7 @@ def main():
     create_tfrecords(image_dir, xml_dir)
     
     config = YoloConfig()
+
     num_classes = 4
     yolo_model = create_model(config=config, num_classes=num_classes, load_pretrained=False)
 
@@ -164,7 +165,8 @@ def main():
         train_tfrecords=os.path.join(os.getcwd(), 'DATA' ,'train*.tfrecord'),
         test_tfrecords=os.path.join(os.getcwd(), 'DATA' ,'test*.tfrecord'), 
         num_classes=num_classes, 
-        config=config)
+        config=config,
+        batch_size=1)
 
     training_dataset = dataset_func.get_train_function()
 
