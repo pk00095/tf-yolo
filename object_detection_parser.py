@@ -257,7 +257,7 @@ class DetectionBase(object):
         y_true_layer1, y_true_layer2, y_true_layer3 = self.tf_preprocess_true_boxes(annotation_batch)
 
         # return im_batch, annotation_batch
-        return im_batch, {'y1_pred':y_true_layer1, 'y2_pred':y_true_layer2, 'y3_pred':y_true_layer3}
+        return im_batch, {'tf_op_layer_y1_pred':y_true_layer1, 'tf_op_layer_y2_pred':y_true_layer2, 'tf_op_layer_y3_pred':y_true_layer3}
 
 
 
