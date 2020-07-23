@@ -321,5 +321,5 @@ if __name__ == '__main__':
 
   training_dataset = dataset_func.get_train_function()
 
-  for im_batch, y1, y2,y3 in training_dataset.take(6):
-    print(im_batch.shape, y1.shape, y2.shape, y3.shape)
+  for im_batch, y_true in training_dataset.take(1):
+    print(im_batch.shape, y_true['tf_op_layer_y1_pred'].shape,y_true['tf_op_layer_y2_pred'].shape,y_true['tf_op_layer_y3_pred'].shape)
