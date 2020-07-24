@@ -50,6 +50,7 @@ def letterbox_image(image, size):
 def annotate_image(image_name, bboxes, scores, labels, threshold=0.5, label_dict=None):
   image = Image.open(image_name)
   Imagedraw = ImageDraw.Draw(image)
+  thickness = (image.size[0] + image.size[1]) // 300
 
   for box, label, score in zip(bboxes, labels, scores):
     if score < threshold:
@@ -71,7 +72,9 @@ def annotate_image(image_name, bboxes, scores, labels, threshold=0.5, label_dict
     #draw_caption(draw, b, caption)
 
     colortofill = STANDARD_COLORS[label]
-    Imagedraw.rectangle([left,top,right,bottom], fill=None, outline=colortofill)
+
+    for i in range(thickness):
+        Imagedraw.rectangle([left + i, top + i, right - i, bottom - i], fill=None, outline=colortofill)
 
     display_str_heights = font.getsize(caption)[1]
     # Each display_str has a top and bottom margin of 0.05x.
