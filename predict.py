@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow import keras
 from PIL import Image, ImageDraw, ImageFont
+import numpy as np
 
 from helpers import YoloConfig
 from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
@@ -108,7 +109,7 @@ def freeze_model(model_path, config, num_classes, max_boxes=20, score_threshold=
     return prediction_model
 
 def detect_image(model, image, config):
-    start = timer()
+    # start = timer()
 
     # if self.model_image_size != (None, None):
     #     assert self.model_image_size[0]%32 == 0, 'Multiples of 32 required'
@@ -125,5 +126,5 @@ def detect_image(model, image, config):
     image_data = np.expand_dims(image_data, 0)  # Add batch dimension.
 
     boxes, scores, classes = model.predict(image_data)
-    
+
     return boxes, scores, classes
