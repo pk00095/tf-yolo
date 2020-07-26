@@ -107,7 +107,7 @@ def create_model(config, num_classes, load_pretrained=True, freeze_body=2):
     if load_pretrained:
         weights_path = keras.utils.get_file(
             fname='darknet53_notop_weights.h5', 
-            origin='https://segmind-data.s3.ap-south-1.amazonaws.com/edge/transfer-learning/classification/darknet53_notop_weights.h5')
+            origin='https://drive.google.com/u/0/uc?export=download&confirm=uCPi&id=1RwvRnB-t2x-LMhU9oKcuJmKzCXInSsUw')
         model_body.load_weights(weights_path, by_name=True, skip_mismatch=True)
         print('Load weights {}.'.format(weights_path))
         if freeze_body in [1, 2]:
