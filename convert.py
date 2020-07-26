@@ -11,6 +11,7 @@ import os
 from collections import defaultdict
 
 import numpy as np
+from tensorflow.keras.utils import get_file
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import (Conv2D, Input, ZeroPadding2D, Add,
                           UpSampling2D, MaxPooling2D, Concatenate)
@@ -22,19 +23,28 @@ from tensorflow.keras.regularizers import l2
 
 
 parser = argparse.ArgumentParser(description='Darknet To Keras Converter.')
-parser.add_argument('config_path', help='Path to Darknet cfg file.')
-parser.add_argument('weights_path', help='Path to Darknet weights file.')
-parser.add_argument('output_path', help='Path to output Keras model file.')
-parser.add_argument(
-    '-p',
-    '--plot_model',
-    help='Plot generated Keras model and save as image.',
-    action='store_true')
-parser.add_argument(
-    '-w',
-    '--weights_only',
-    help='Save as Keras weights file instead of model file.',
-    action='store_true')
+parser.add_argument('model_name', help='Path to Darknet cfg file.')
+# parser.add_argument('weights_path', help='Path to Darknet weights file.')
+# parser.add_argument('output_path', help='Path to output Keras model file.')
+# parser.add_argument(
+#     '-p',
+#     '--plot_model',
+#     help='Plot generated Keras model and save as image.',
+#     action='store_true')
+# parser.add_argument(
+#     '-w',
+#     '--weights_only',
+#     help='Save as Keras weights file instead of model file.',
+#     action='store_true')
+
+_PRETRAINED_WEIGHTS = {
+    'darknet53':'https://pjreddie.com/media/files/darknet53.conv.74',
+    'yolov3':'https://pjreddie.com/media/files/yolov3.weights',
+}
+_CFG_FILE = {
+    'darknet53':'darknet53.cfg',
+    'yolov3':'yolov3.cfg'
+}
 
 def unique_config_sections(config_file):
     """Convert all config sections to have unique names.
@@ -55,15 +65,20 @@ def unique_config_sections(config_file):
     return output_stream
 
 # %%
-def _main(args):
-    config_path = os.path.expanduser(args.config_path)
-    weights_path = os.path.expanduser(args.weights_path)
+def convert(model_name):
+    output_path='./pretrained'
+    os.makedirs(output_path, exist_ok=True)
+
+    config_path =  _CFG_FILE[model_name]  #os.path.expanduser(args.config_path)
+    weights_path = get_file(model_name+'.weights', _PRETRAINED_WEIGHTS[model_name])  #os.path.expanduser(args.weights_path)
+
+    output_path = os.path.join(os.path.expanduser(output_path), model_name+'.h5')
     assert config_path.endswith('.cfg'), '{} is not a .cfg file'.format(
         config_path)
     assert weights_path.endswith(
         '.weights'), '{} is not a .weights file'.format(weights_path)
 
-    output_path = os.path.expanduser(args.output_path)
+    output_path = os.path.expanduser(output_path)
     assert output_path.endswith(
         '.h5'), 'output path {} is not a .h5 file'.format(output_path)
     output_root = os.path.splitext(output_path)[0]
@@ -237,13 +252,13 @@ def _main(args):
     # Create and save model.
     if len(out_index)==0: out_index.append(len(all_layers)-1)
     model = Model(inputs=input_layer, outputs=[all_layers[i] for i in out_index])
-    print(model.summary())
-    if args.weights_only:
-        model.save_weights('{}'.format(output_path))
-        print('Saved Keras weights to {}'.format(output_path))
-    else:
-        model.save('{}'.format(output_path))
-        print('Saved Keras model to {}'.format(output_path))
+    # print(model.summary())
+    # if args.weights_only:
+    model.save_weights('{}'.format(output_path))
+    print('Saved Keras weights to {}'.format(output_path))
+    # else:
+    #     model.save('{}'.format(output_path))
+    #     print('Saved Keras model to {}'.format(output_path))
 
     # Check to see if all weights have been read.
     remaining_weights = len(weights_file.read()) / 4
@@ -253,10 +268,7 @@ def _main(args):
     if remaining_weights > 0:
         print('Warning: {} unused weights'.format(remaining_weights))
 
-    if args.plot_model:
-        plot(model, to_file='{}.png'.format(output_root), show_shapes=True)
-        print('Saved model plot to {}.png'.format(output_root))
-
 
 if __name__ == '__main__':
-    _main(parser.parse_args())
+    args = parser.parse_args()
+    convert(args.model_name)

@@ -4,3 +4,4 @@ __pycache__
 aerial-vehicles-dataset
 *.zip
 *.txt
+/pretrained

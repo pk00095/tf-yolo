@@ -105,9 +105,10 @@ def create_model(config, num_classes, load_pretrained=True, freeze_body=2):
     print('Create YOLOv3 model with {} anchors and {} classes.'.format(num_anchors, num_classes))
 
     if load_pretrained:
-        weights_path = keras.utils.get_file(
-            fname='darknet53_notop_weights.h5', 
-            origin='https://drive.google.com/u/0/uc?export=download&confirm=uCPi&id=1RwvRnB-t2x-LMhU9oKcuJmKzCXInSsUw')
+        # weights_path = keras.utils.get_file(
+        #     fname='darknet53_notop_weights.h5', 
+        #     origin='https://drive.google.com/u/0/uc?export=download&confirm=uCPi&id=1RwvRnB-t2x-LMhU9oKcuJmKzCXInSsUw')
+        weights_path = './pretrained/darknet53.h5'
         model_body.load_weights(weights_path, by_name=True, skip_mismatch=True)
         print('Load weights {}.'.format(weights_path))
         if freeze_body in [1, 2]:
