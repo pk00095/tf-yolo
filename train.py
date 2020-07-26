@@ -2,6 +2,7 @@
 Retrain the YOLO model for your own dataset.
 """
 import numpy as np
+from tensorflow import keras
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Input, Lambda
 from tensorflow.keras.models import Model
@@ -88,8 +89,7 @@ from object_detection_parser import DetectionBase
 #         model.save_weights(log_dir + 'trained_weights_final.h5')
 
 
-def create_model(config, num_classes, load_pretrained=True, freeze_body=2,
-            weights_path='model_data/yolo_weights.h5'):
+def create_model(config, num_classes, load_pretrained=True, freeze_body=2):
     '''create the training model'''
     K.clear_session() # get a new session
     input_shape = config.input_shape
@@ -105,6 +105,9 @@ def create_model(config, num_classes, load_pretrained=True, freeze_body=2,
     print('Create YOLOv3 model with {} anchors and {} classes.'.format(num_anchors, num_classes))
 
     if load_pretrained:
+    	weights_path = tf.keras.utils.get_file(
+    		fname='darknet53_notop_weights.h5', 
+    		origin='https://segmind-data.s3.ap-south-1.amazonaws.com/edge/transfer-learning/classification/darknet53_notop_weights.h5')
         model_body.load_weights(weights_path, by_name=True, skip_mismatch=True)
         print('Load weights {}.'.format(weights_path))
         if freeze_body in [1, 2]:
@@ -159,7 +162,7 @@ def main():
     config = YoloConfig()
 
     num_classes = 4
-    yolo_model = create_model(config=config, num_classes=num_classes, load_pretrained=False)
+    yolo_model = create_model(config=config, num_classes=num_classes, load_pretrained=False, freeze_body=1) #freeze_body=1 means only freeze the backbone
 
     dataset_func = DetectionBase(
         train_tfrecords=os.path.join(os.getcwd(), 'DATA' ,'train*.tfrecord'),
