@@ -87,7 +87,7 @@ def negative_data(filename):
 
 def positive_data(xml_path, image_file, VOC_LABELS):
 
-    filename = os.path.join(xml_path,image_file.split('/')[-1].split('.')[0]+'.xml')
+    filename = os.path.join(xml_path,'.'.join(image_file.split('/')[-1].split('.')[:-1])+'.xml')
     tree = ET.parse(filename)
     root = tree.getroot()
 
@@ -199,7 +199,7 @@ def files_to_retain(files, xml_dir):
     reject_list = []
     
     for f in files:
-        name = f.split('/')[-1].split('.')[0]
+        name = '.'.join(f.split('/')[-1].split('.')[:-1])
         if os.path.isfile(os.path.join(xml_dir,name+'.xml')):
          retain_list.append((f, True))
         else :
