@@ -105,7 +105,7 @@ def create_model(config, num_classes, load_pretrained=True, freeze_body=2):
     print('Create YOLOv3 model with {} anchors and {} classes.'.format(num_anchors, num_classes))
 
     if load_pretrained:
-        weights_path = tf.keras.utils.get_file(
+        weights_path = keras.utils.get_file(
             fname='darknet53_notop_weights.h5', 
             origin='https://segmind-data.s3.ap-south-1.amazonaws.com/edge/transfer-learning/classification/darknet53_notop_weights.h5')
         model_body.load_weights(weights_path, by_name=True, skip_mismatch=True)
