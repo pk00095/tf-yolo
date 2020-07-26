@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
+import cv2
 
 from helpers import YoloConfig
 from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
@@ -46,6 +47,25 @@ def letterbox_image(image, size):
     new_image = Image.new('RGB', size, (128,128,128))
     new_image.paste(image, ((w-nw)//2, (h-nh)//2))
     return new_image
+
+
+def preprocess_image(image_array, config):
+
+    ih, iw, _c = image_array.shape
+    h, w = config.input_shape
+
+    # if not random:
+        # resize image
+    scale = min(w/iw, h/ih)
+    nw = int(iw*scale)
+    nh = int(ih*scale)
+    dx = (w-nw)//2
+    dy = (h-nh)//2
+
+    image = cv2.resize(image_array, (nw, nh), interpolation=cv2.INTER_CUBIC)
+    new_image = np.ones(shape=(h,w,3), dtype=np.uint8)*128
+    new_image[dy:dy+nh,dx:dx+nw,:] = image
+    return new_image, scale
 
 def annotate_image(image_name, bboxes, scores, labels, threshold=0.5, label_dict=None):
   image = Image.open(image_name)
@@ -123,12 +143,12 @@ def detect_image(model, image, config):
     # if self.model_image_size != (None, None):
     #     assert self.model_image_size[0]%32 == 0, 'Multiples of 32 required'
         # assert self.model_image_size[1]%32 == 0, 'Multiples of 32 required'
-    boxed_image = letterbox_image(image, (config.width, config.height))
+    boxed_image, scale = preprocess_image(np.array(image), config)
     # else:
     #     new_image_size = (image.width - (image.width % 32),
     #                       image.height - (image.height % 32))
     #     boxed_image = letterbox_image(image, new_image_size)
-    image_data = np.array(boxed_image, dtype='float32')
+    image_data = boxed_image.astype(keras.backend.floatx())
 
     print(image_data.shape)
     image_data /= 255.
