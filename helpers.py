@@ -67,6 +67,24 @@ def download_aerial_dataset(dataset_path=tempfile.gettempdir()):
 
     return images_dir, annotation_dir
 
+
+def download_chess_dataset(dataset_path=tempfile.gettempdir()):
+    zip_url = 'https://public.roboflow.ai/ds/uBYkFHtqpy?key=HZljsh2sXY'
+    path_to_zip_file = tf.keras.utils.get_file(
+        'chess_pieces.zip',
+        zip_url,
+        cache_dir=dataset_path, 
+        cache_subdir='',
+        extract=False)
+    directory_to_extract_to = os.path.join(dataset_path,'chess_pieces')
+    with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
+        zip_ref.extractall(directory_to_extract_to)
+
+    images_dir = os.path.join(dataset_path, 'chess_pieces','train')
+    annotation_dir = os.path.join(dataset_path, 'chess_pieces','train')
+
+    return images_dir, annotation_dir
+
 def preprocess_true_boxes(true_boxes, input_shape, anchors, num_classes, anchor_mask):
     '''Preprocess true boxes to training input format
 
