@@ -5,3 +5,6 @@ aerial-vehicles-dataset
 *.zip
 *.txt
 /pretrained
+*.jpeg
+*.gz
+/aerial_yolo

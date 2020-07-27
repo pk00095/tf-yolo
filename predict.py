@@ -65,12 +65,13 @@ def preprocess_image(image_array, config):
     image = cv2.resize(image_array, (nw, nh), interpolation=cv2.INTER_CUBIC)
     new_image = np.ones(shape=(h,w,3), dtype=np.uint8)*128
     new_image[dy:dy+nh,dx:dx+nw,:] = image
-    return new_image, scale
+    return new_image, scale, dy, dx, nh,nw
 
-def annotate_image(image_name, bboxes, scores, labels, threshold=0.5, label_dict=None):
-  image = Image.open(image_name)
+
+def annotate_image(image, bboxes, scores, labels, threshold=0.5, label_dict=None):
+  # image = Image.open(image)
   Imagedraw = ImageDraw.Draw(image)
-  thickness = (image.size[0] + image.size[1]) // 300
+  # thickness = (image.size[0] + image.size[1]) // 300
 
   for box, label, score in zip(bboxes, labels, scores):
     if score < threshold:
@@ -92,9 +93,10 @@ def annotate_image(image_name, bboxes, scores, labels, threshold=0.5, label_dict
     #draw_caption(draw, b, caption)
 
     colortofill = STANDARD_COLORS[label]
+    Imagedraw.rectangle([left,top,right,bottom], fill=None, outline=colortofill, width=3)
 
-    for i in range(thickness):
-        Imagedraw.rectangle([left + i, top + i, right - i, bottom - i], fill=None, outline=colortofill)
+    # for i in range(thickness):
+    #     Imagedraw.rectangle([left + i, top + i, right - i, bottom - i], fill=None, outline=colortofill)
 
     display_str_heights = font.getsize(caption)[1]
     # Each display_str has a top and bottom margin of 0.05x.
@@ -138,16 +140,10 @@ def freeze_model(model_path, config, num_classes, max_boxes=20, score_threshold=
     return prediction_model
 
 def detect_image(model, image, config):
-    # start = timer()
+ 
 
-    # if self.model_image_size != (None, None):
-    #     assert self.model_image_size[0]%32 == 0, 'Multiples of 32 required'
-        # assert self.model_image_size[1]%32 == 0, 'Multiples of 32 required'
-    boxed_image, scale = preprocess_image(np.array(image), config)
-    # else:
-    #     new_image_size = (image.width - (image.width % 32),
-    #                       image.height - (image.height % 32))
-    #     boxed_image = letterbox_image(image, new_image_size)
+    boxed_image, scale, dy, dx, nh,nw = preprocess_image(np.array(image), config)
+
     image_data = boxed_image.astype(keras.backend.floatx())
 
     print(image_data.shape)
@@ -156,4 +152,13 @@ def detect_image(model, image, config):
 
     boxes, scores, classes = model.predict(image_data)
 
-    return boxes.astype('int32')/scale, scores, classes
+    boxes[:,0] = boxes[:,0]-dy
+    boxes[:,2] = boxes[:,2]-dy
+
+    boxes[:,1] = boxes[:,1]-dx
+    boxes[:,3] = boxes[:,3]-dx
+
+    h, w = config.input_shape
+
+    # return boxes*scale, scores, classes, boxed_image
+    return boxes/scale, scores, classes, boxed_image[dy:dy+nh,dx:dx+nw,:]
