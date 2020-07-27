@@ -83,7 +83,7 @@ def annotate_image(image, bboxes, scores, labels, threshold=0.5, label_dict=None
     left = max(0, np.floor(left + 0.5).astype('int32'))
     bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
     right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
-    print(label, (left, top), (right, bottom))
+    # print(label, (left, top), (right, bottom))
 
     label_to_display = label
     if isinstance(label_dict, dict):
