@@ -65,11 +65,11 @@ def preprocess_image(image_array, config):
     image = cv2.resize(image_array, (nw, nh), interpolation=cv2.INTER_CUBIC)
     new_image = np.ones(shape=(h,w,3), dtype=np.uint8)*128
     new_image[dy:dy+nh,dx:dx+nw,:] = image
-    return new_image, scale, dy, dx, nh,nw
+    return new_image, scale, dy, dx
 
 
 def annotate_image(image, bboxes, scores, labels, threshold=0.5, label_dict=None):
-  # image = Image.open(image)
+  image = Image.open(image)
   Imagedraw = ImageDraw.Draw(image)
   # thickness = (image.size[0] + image.size[1]) // 300
 
@@ -142,11 +142,11 @@ def freeze_model(model_path, config, num_classes, max_boxes=20, score_threshold=
 def detect_image(model, image, config):
  
 
-    boxed_image, scale, dy, dx, nh,nw = preprocess_image(np.array(image), config)
+    boxed_image, scale, dy, dx = preprocess_image(np.array(image), config)
 
     image_data = boxed_image.astype(keras.backend.floatx())
 
-    print(image_data.shape)
+    #print(image_data.shape)
     image_data /= 255.
     image_data = np.expand_dims(image_data, 0)  # Add batch dimension.
 
@@ -158,7 +158,4 @@ def detect_image(model, image, config):
     boxes[:,1] = boxes[:,1]-dx
     boxes[:,3] = boxes[:,3]-dx
 
-    h, w = config.input_shape
-
-    # return boxes*scale, scores, classes, boxed_image
-    return boxes/scale, scores, classes, boxed_image[dy:dy+nh,dx:dx+nw,:]
+    return boxes/scale, scores, classes

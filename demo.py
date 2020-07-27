@@ -15,13 +15,13 @@ image_dir, xml_dir = download_aerial_dataset()
 
 imagePath = os.path.join(image_dir,'DJI_0012.jpg')
 
-bbox, score, label, im_arr = detect_image(
+bbox, score, label = detect_image(
     model=prediction_model, 
     image=Image.open(imagePath), 
     config=config)
 
 im = annotate_image(
-    Image.open(imagePath), 
+    imagePath, 
     bbox, score, label)
 
 im = im.resize((640,480))
