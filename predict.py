@@ -156,4 +156,4 @@ def detect_image(model, image, config):
 
     boxes, scores, classes = model.predict(image_data)
 
-    return boxes, scores, classes
+    return boxes.astype('int32')/scale, scores, classes
