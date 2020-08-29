@@ -17,13 +17,7 @@ an implementation of yolov3 with tensorflow-2.2, which uses tf.data api on tfrec
 - Implement Tiny-YOLO
 
 ## Reference
-@article{redmon2018yolov3,
-  title={Yolov3: An incremental improvement. arXiv 2018},
-  author={Redmon, Joseph and Farhadi, Ali},
-  journal={arXiv preprint arXiv:1804.02767},
-  pages={1--6},
-  year={2018}
-}
+Redmon, J. and Farhadi, A., 2018. Yolov3: An incremental improvement. arXiv 2018. arXiv preprint arXiv:1804.02767, pp.1-6.
 
 
 
