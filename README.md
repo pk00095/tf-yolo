@@ -18,7 +18,7 @@ an implementation of yolov3 with tensorflow-2.2, which uses tf.data api on tfrec
 
 ## Reference
 - Redmon, J. and Farhadi, A., 2018. Yolov3: An incremental improvement. arXiv 2018. arXiv preprint arXiv:1804.02767, pp.1-6.
-- codes from qqwweee's (repo)[https://github.com/qqwweee/keras-yolo3] were re used
+- codes from qqwweee's [repo](https://github.com/qqwweee/keras-yolo3) were re used
 
 
 
